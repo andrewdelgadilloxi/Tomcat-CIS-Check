@@ -50,6 +50,40 @@ get_tomcat_version() {
   fi
 }
 
+push_report_to_github() {
+  local report_file="$1"
+  local tomcat_dir="$2"
+  local repo_dir="/tmp/reports_repo"  # temporary clone location
+  local branch="main"
+  local github_token="${GITHUB_TOKEN:?Error: GITHUB_TOKEN not set}"
+  local remote_repo="https://${github_token}@github.com/andrewdelgadilloxi/Reports.git"
+
+  echo "🔄 Updating Reports repo and pushing report..."
+
+  if [[ ! -d "$repo_dir" ]]; then
+    git clone "$remote_repo" "$repo_dir"
+  else
+    cd "$repo_dir" || return
+    git pull origin "$branch"
+  fi
+
+  local base_name
+  base_name=$(basename "$report_file")
+  local timestamp
+  timestamp=$(date +%Y%m%d-%H%M%S)
+  local new_report_name="${base_name%.txt}_$(basename "$tomcat_dir")_$timestamp.txt"
+
+  cp "$report_file" "$repo_dir/$new_report_name"
+
+  cd "$repo_dir" || return
+
+  git add "$new_report_name"
+  git commit -m "Add report for $(basename "$tomcat_dir") at $timestamp"
+  git push origin "$branch"
+
+  echo "✅ Report pushed as $new_report_name"
+}
+
 launch_cis_check() {
   local dir="$1"
   local major="$2"
