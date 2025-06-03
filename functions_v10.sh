@@ -11,6 +11,7 @@ check_controls_v10() {
   local hostname=$(hostname)
   local timestamp=$(date '+%Y-%m-%d_%H-%M-%S')
   local report_name="${hostname}_tomcat10_cis_compliance_${timestamp}.txt"
+  mkdir -p "$dir"
   local report_path="$dir/tomcat10_cis_compliance_report.txt"
 
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
