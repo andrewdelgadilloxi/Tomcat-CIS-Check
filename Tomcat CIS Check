@@ -103,23 +103,23 @@ launch_cis_check() {
     case "$major" in
       7)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v7.sh)
-        report_path=$(check_controls_v7 "$dir")
+        report_path=$(check_controls_v7 "$dir" | tr -d '\r' | tail -n1)
         ;;
       8)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v8.sh)
-        report_path=$(check_controls_v8 "$dir")
+        report_path=$(check_controls_v8 "$dir" | tr -d '\r' | tail -n1)
         ;;
       9)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v9.sh)
-        report_path=$(check_controls_v9 "$dir")
+        report_path=$(check_controls_v9 "$dir" | tr -d '\r' | tail -n1)
         ;;
       10)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v10.sh)
-        report_path=$(check_controls_v10 "$dir")
+        report_path=$(check_controls_v10 "$dir" | tr -d '\r' | tail -n1)
         ;;
       11)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v11.sh)
-        report_path=$(check_controls_v11 "$dir")
+        report_path=$(check_controls_v11 "$dir" | tr -d '\r' | tail -n1)
         ;;
       *)
         echo "⚠️ Unsupported Tomcat version: $major"
