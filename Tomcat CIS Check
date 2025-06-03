@@ -40,107 +40,113 @@ TOMCAT_DIRS=(
 )
 
 get_tomcat_version() {
-  local dir="$1"
-  local jar
-  jar=$(find "$dir" -name catalina.jar 2>/dev/null | head -n1)
-  if [[ -f "$jar" ]]; then
-    unzip -p "$jar" META-INF/MANIFEST.MF 2>/dev/null | grep "Implementation-Version" | awk '{print $2}' | cut -d'-' -f1
-  else
-    echo ""
-  fi
+    local dir="$1"
+    local jar
+    jar=$(find "$dir" -name catalina.jar 2>/dev/null | head -n1)
+    if [[ -f "$jar" ]]; then
+        unzip -p "$jar" META-INF/MANIFEST.MF 2>/dev/null | grep "Implementation-Version" | awk '{print $2}' | cut -d'-' -f1
+    else
+        echo ""
+    fi
 }
 
 push_report_to_github() {
-  local report_file="$1"
-  local tomcat_dir="$2"
-  local repo_dir="/tmp/reports_repo"  # temporary clone location
-  local branch="main"
-  local github_token="${GITHUB_TOKEN:?Error: GITHUB_TOKEN not set}"
-  local remote_repo="https://${github_token}@github.com/andrewdelgadilloxi/Reports.git"
+    local report_file="$1"
+    local tomcat_dir="$2"
+    local repo_dir="/tmp/reports_repo"  # temporary clone location
+    local branch="main"
+    local github_token="${GITHUB_TOKEN:?Error: GITHUB_TOKEN not set}"
+    local remote_repo="https://${github_token}@github.com/andrewdelgadilloxi/Reports.git"
 
-  echo "🔄 Updating Reports repo and pushing report..."
+    echo "🔄 Updating Reports repo and pushing report..."
 
-  if [[ ! -d "$repo_dir" ]]; then
-    git clone "$remote_repo" "$repo_dir"
-  else
+    if [[ ! -d "$repo_dir" ]]; then
+        git clone "$remote_repo" "$repo_dir"
+    else
+        cd "$repo_dir" || return
+        git pull origin "$branch"
+    fi
+
+    local base_name
+    base_name=$(basename "$report_file")
+    local timestamp
+    timestamp=$(date +%Y%m%d-%H%M%S)
+    local new_report_name="${base_name%.txt}_$(basename "$tomcat_dir")_$timestamp.txt"
+
+    cp "$report_file" "$repo_dir/$new_report_name"
+
     cd "$repo_dir" || return
-    git pull origin "$branch"
-  fi
 
-  local base_name
-  base_name=$(basename "$report_file")
-  local timestamp
-  timestamp=$(date +%Y%m%d-%H%M%S)
-  local new_report_name="${base_name%.txt}_$(basename "$tomcat_dir")_$timestamp.txt"
+    git add "$new_report_name"
+    git commit -m "Add report for $(basename "$tomcat_dir") at $timestamp"
+    git push origin "$branch"
 
-  cp "$report_file" "$repo_dir/$new_report_name"
-
-  cd "$repo_dir" || return
-
-  git add "$new_report_name"
-  git commit -m "Add report for $(basename "$tomcat_dir") at $timestamp"
-  git push origin "$branch"
-
-  echo "✅ Report pushed as $new_report_name"
+    echo "✅ Report pushed as $new_report_name"
 }
 
 launch_cis_check() {
-  local dir="$1"
-  local major="$2"
-  local report_path=""
+    local dir="$1"
+    local major="$2"
+    local report_path=""
 
-  case "$major" in
-    7)
-      source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v7.sh)
-      check_controls_v7 "$dir"
-      report_path="$dir/tomcat7_cis_compliance_report.txt"
-      ;;
-    8)
-      source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v8.sh)
-      check_controls_v8 "$dir"
-      report_path="$dir/tomcat8_cis_compliance_report.txt"
-      ;;
-    9)
-      source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v9.sh)
-      check_controls_v9 "$dir"
-      report_path="$dir/tomcat9_cis_compliance_report.txt"
-      ;;
-    10)
-      source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v10.sh)
-      check_controls_v10 "$dir"
-      report_path="$dir/tomcat10_cis_compliance_report.txt"
-      ;;
-    11)
-      source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v11.sh)
-      check_controls_v11 "$dir"
-      report_path="$dir/tomcat11_cis_compliance_report.txt"
-      ;;
-    *)
-      echo "⚠️ Unsupported Tomcat version: $major"
-      return
-      ;;
-  esac
+    case "$major" in
+      7)
+        source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v7.sh)
+        check_controls_v7 "$dir"
+        report_path="$dir/tomcat7_cis_compliance_report.txt"
+        ;;
+      8)
+        source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v8.sh)
+        check_controls_v8 "$dir"
+        report_path="$dir/tomcat8_cis_compliance_report.txt"
+        ;;
+      9)
+        source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v9.sh)
+        check_controls_v9 "$dir"
+        report_path="$dir/tomcat9_cis_compliance_report.txt"
+        ;;
+      10)
+        source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v10.sh)
+        check_controls_v10 "$dir"
+        report_path="$dir/tomcat10_cis_compliance_report.txt"
+        ;;
+      11)
+        source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v11.sh)
+        check_controls_v11 "$dir"
+        report_path="$dir/tomcat11_cis_compliance_report.txt"
+        ;;
+      *)
+        echo "⚠️ Unsupported Tomcat version: $major"
+        return
+        ;;
+    esac
 
-  if [[ -f "$report_path" ]]; then
-    echo "📄 Report generated at: $report_path"
-  else
-    echo "⚠️ Expected report file not found: $report_path"
-  fi
+    # Copy report to Reports and push to GitHub
+    if [[ -f "$report_path" ]]; then
+        cp "$report_path" ./Reports/
+        cd ./Reports
+        git add "$(basename "$report_path")"
+        git commit -m "Add compliance report for Tomcat $major on $(date)"
+        git push
+        cd ..
+    else
+        echo "❌ No report found at $report_path"
+    fi
 }
 
 # Search and scan for Tomcat instances
 for base_path in "${TOMCAT_DIRS[@]}"; do
-  for dir in $(ls -d $base_path 2>/dev/null); do
-    if [[ -d "$dir" && -f "$dir/conf/server.xml" ]]; then
-      echo -e "\n📦 Found Tomcat at: $dir"
-      version=$(get_tomcat_version "$dir")
-      if [[ -n "$version" ]]; then
-        major=$(echo "$version" | cut -d'.' -f1)
-        echo "🔍 Detected version: $version (major: $major)"
-        launch_cis_check "$dir" "$major"
-      else
-        echo "⚠️ Could not determine version for: $dir"
-      fi
-    fi
-  done
+    for dir in $(ls -d $base_path 2>/dev/null); do
+        if [[ -d "$dir" && -f "$dir/conf/server.xml" ]]; then
+            echo -e "\n📦 Found Tomcat at: $dir"
+            version=$(get_tomcat_version "$dir")
+            if [[ -n "$version" ]]; then
+                major=$(echo "$version" | cut -d'.' -f1)
+                echo "🔍 Detected version: $version (major: $major)"
+                launch_cis_check "$dir" "$major"
+            else
+                echo "⚠️ Could not determine version for: $dir"
+            fi
+        fi
+    done
 done
