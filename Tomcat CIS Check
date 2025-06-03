@@ -91,27 +91,27 @@ launch_cis_check() {
 
     case "$major" in
       7)
-        source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v7.sh)
+        source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/blob/main/functions_v7.sh)
         check_controls_v7 "$dir"
         report_path="$dir/tomcat7_cis_compliance_report.txt"
         ;;
       8)
-        source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v8.sh)
+        source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/blob/main/functions_v8.sh)
         check_controls_v8 "$dir"
         report_path="$dir/tomcat8_cis_compliance_report.txt"
         ;;
       9)
-        source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v9.sh)
+        source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/blob/main/functions_v9.sh)
         check_controls_v9 "$dir"
         report_path="$dir/tomcat9_cis_compliance_report.txt"
         ;;
       10)
-        source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v10.sh)
+        source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/blob/main/functions_v10.sh)
         check_controls_v10 "$dir"
         report_path="$dir/tomcat10_cis_compliance_report.txt"
         ;;
       11)
-        source <(curl -sSL https://raw.githubusercontent.com/willxifin/Tomcat-CIS-Benchmarks/main/functions_v11.sh)
+        source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/blob/main/functions_v11.sh)
         check_controls_v11 "$dir"
         report_path="$dir/tomcat11_cis_compliance_report.txt"
         ;;
