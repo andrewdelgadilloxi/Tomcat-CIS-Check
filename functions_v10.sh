@@ -10,12 +10,15 @@ check_controls_v10() {
   local dir="$1"
   local hostname=$(hostname)
   local timestamp=$(date '+%Y-%m-%d_%H-%M-%S')
-  local report_name="${hostname}_tomcat10_cis_compliance_${timestamp}.txt"
-  mkdir -p "$dir"
-  local report_path="$dir/$report_name"
+  
+  local output_dir="/opt/tomcat_hardening"
+  mkdir -p "$output_dir"
 
-  # Start fresh report file
-  : > "$report_path"  || { echo "❌ Failed to create report file at $report_path"; return 1; }
+  local report_name="${hostname}_tomcat10_cis_compliance_${timestamp}.txt"
+  local report_path="$output_dir/$report_name"
+
+  # Clear or create report file
+  : > "$report_path" || { echo "❌ Failed to create $report_path" >&2; return 1; }
   
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "Apache Tomcat 10 Hardening Assessment"
