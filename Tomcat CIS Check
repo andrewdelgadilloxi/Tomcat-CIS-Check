@@ -36,7 +36,7 @@ TOMCAT_DIRS=(
     "/opt/patientportal"
     "/opt/peportal"
     "/opt/ssoportal"
-    "opt/docstore"
+    "/opt/docstore"
 )
 
 get_tomcat_version() {
@@ -61,11 +61,18 @@ push_report_to_github() {
     echo "🔄 Updating Reports repo and pushing report..."
 
     if [[ ! -d "$repo_dir" ]]; then
-        git clone "$remote_repo" "$repo_dir"
+        git clone "$remote_repo" "$repo_dir" || {
+            echo "❌ Failed to clone reports repository"
+            return
+        }
     else
-        cd "$repo_dir" || return
+        cd "$repo_dir" || {
+            echo "❌ Cannot enter repo directory"
+            return
+        }
         git pull origin "$branch"
     fi
+
 
     local base_name
     base_name=$(basename "$report_file")
@@ -73,6 +80,7 @@ push_report_to_github() {
     timestamp=$(date +%Y%m%d-%H%M%S)
     local new_report_name="${base_name%.txt}_$(basename "$tomcat_dir")_$timestamp.txt"
 
+    [[ -d "$repo_dir" ]] || { echo "❌ Repo directory missing"; return; }
     cp "$report_file" "$repo_dir/$new_report_name"
 
     cd "$repo_dir" || return
@@ -97,34 +105,34 @@ launch_cis_check() {
     case "$major" in
       7)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v7.sh)
-        check_controls_v7 "$dir"
-        report_path="$dir/tomcat7_cis_compliance_report.txt"
+        report_path=$(check_controls_v7 "$dir")
         ;;
       8)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v8.sh)
-        check_controls_v8 "$dir"
-        report_path="$dir/tomcat8_cis_compliance_report.txt"
+        report_path=$(check_controls_v8 "$dir")
         ;;
       9)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v9.sh)
-        check_controls_v9 "$dir"
-        report_path="$dir/tomcat9_cis_compliance_report.txt"
+        report_path=$(check_controls_v9 "$dir")
         ;;
       10)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v10.sh)
-        check_controls_v10 "$dir"
-        report_path="$dir/tomcat10_cis_compliance_report.txt"
+        report_path=$(check_controls_v10 "$dir")
         ;;
       11)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v11.sh)
-        check_controls_v11 "$dir"
-        report_path="$dir/tomcat11_cis_compliance_report.txt"
+        report_path=$(check_controls_v11 "$dir")
         ;;
       *)
         echo "⚠️ Unsupported Tomcat version: $major"
         return
         ;;
     esac
+
+    if ! command -v git >/dev/null 2>&1; then
+        echo "❌ 'git' is not installed. Cannot push reports."
+        exit 1
+    fi
 
     if [[ -f "$report_path" ]]; then
         echo "📄 Report generated at: $report_path"
