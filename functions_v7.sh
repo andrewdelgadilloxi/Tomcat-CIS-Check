@@ -374,25 +374,14 @@ check_controls_v7() {
     echo "Remediation: chmod -R 750 $bin_dir and chown -R tomcat:tomcat $bin_dir" | tee -a "$report_path"
   fi
 
-  # === Upload Report to GitHub if GH_TOKEN is defined ===
-  if [[ -n "$GH_TOKEN" ]]; then
-    repo="XIFIN-Inc/TomcatHardening-Security"
-    filename="${hostname}.txt"
-    encoded_content=$(base64 -w 0 "$report_path")
-
-    curl -s -X PUT \
-      -H "Authorization: token $GH_TOKEN" \
-      -H "Content-Type: application/json" \
-      -d "{\"message\": \"Upload compliance report for $hostname\", \"content\": \"$encoded_content\"}" \
-      "https://api.github.com/repos/$repo/contents/reports/$filename"
-  fi
-
   # === Exit with result summary ===
   if grep -q "❌" "$report_path"; then
     echo "\nTomcat hardening check: FAILED" | tee -a "$report_path"
-    exit 1
   else
     echo "\nTomcat hardening check: PASSED" | tee -a "$report_path"
-    exit 0
   fi
+
+  # ✅ Echo the report path for parent script to capture
+  echo "$report_path"
+
 }
