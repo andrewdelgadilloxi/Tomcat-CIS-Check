@@ -11,7 +11,7 @@ check_controls_v9() {
   local hostname=$(hostname)
   local timestamp=$(date '+%Y-%m-%d_%H-%M-%S')
   local report_name="${hostname}_tomcat9_cis_compliance_${timestamp}.txt"
-  local report_path="/tmp/$report_name"
+  local report_path="$dir/tomcat9_cis_compliance_report.txt"
 
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "Apache Tomcat 9 Hardening Assessment"
