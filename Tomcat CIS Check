@@ -53,26 +53,9 @@ get_tomcat_version() {
 push_report_to_github() {
     local report_file="$1"
     local tomcat_dir="$2"
-    local repo_dir="/tmp/reports_repo"  # temporary clone location
-    local branch="main"
     local github_token="${GITHUB_TOKEN:?Error: GITHUB_TOKEN not set}"
-    local remote_repo="https://${github_token}@github.com/andrewdelgadilloxi/Reports.git"
-
-    echo "🔄 Updating Reports repo and pushing report..."
-
-    if [[ ! -d "$repo_dir" ]]; then
-        git clone "$remote_repo" "$repo_dir" || {
-            echo "❌ Failed to clone reports repository"
-            return
-        }
-    else
-        cd "$repo_dir" || {
-            echo "❌ Cannot enter repo directory"
-            return
-        }
-        git pull origin "$branch"
-    fi
-
+    local repo="andrewdelgadilloxi/Reports"
+    local branch="main"
 
     local base_name
     base_name=$(basename "$report_file")
@@ -80,22 +63,37 @@ push_report_to_github() {
     timestamp=$(date +%Y%m%d-%H%M%S)
     local new_report_name="${base_name%.txt}_$(basename "$tomcat_dir")_$timestamp.txt"
 
-    [[ -d "$repo_dir" ]] || { echo "❌ Repo directory missing"; return; }
-    cp "$report_file" "$repo_dir/$new_report_name"
+    local api_url="https://api.github.com/repos/$repo/contents/$new_report_name"
 
-    cd "$repo_dir" || return
+    # Base64 encode file contents
+    local file_content
+    file_content=$(base64 -w 0 "$report_file")
 
-    git add "$new_report_name"
-    git commit -m "Add report for $(basename "$tomcat_dir") at $timestamp"
-    git push origin "$branch"
+    # Create commit message and payload
+    read -r -d '' payload <<EOF
+{
+  "message": "Add report for $(basename "$tomcat_dir") at $timestamp",
+  "content": "$file_content",
+  "branch": "$branch"
+}
+EOF
 
-    echo "✅ Report pushed as $new_report_name"
+    echo "📤 Uploading $new_report_name to GitHub via API..."
+    response=$(curl -s -X PUT \
+      -H "Authorization: token $github_token" \
+      -H "Content-Type: application/json" \
+      -d "$payload" \
+      "$api_url")
 
-    # Cleanup: remove local report after successful push
-    if [[ -f "$report_file" ]]; then
+    if echo "$response" | grep -q '"content"'; then
+        echo "✅ Successfully uploaded $new_report_name"
         rm -f "$report_file" && echo "🧹 Local report deleted: $report_file"
+    else
+        echo "❌ Failed to upload to GitHub"
+        echo "$response"
     fi
 }
+
 
 launch_cis_check() {
     local dir="$1"
