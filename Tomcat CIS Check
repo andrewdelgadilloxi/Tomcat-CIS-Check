@@ -127,11 +127,6 @@ launch_cis_check() {
         ;;
     esac
 
-    if ! command -v git >/dev/null 2>&1; then
-        echo "❌ 'git' is not installed. Cannot push reports."
-        exit 1
-    fi
-
     if [[ -f "$report_path" ]]; then
         echo "📄 Report generated at: $report_path"
         echo "Pushing report to GitHub..."
