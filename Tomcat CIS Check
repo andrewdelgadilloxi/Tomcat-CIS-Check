@@ -121,14 +121,8 @@ launch_cis_check() {
         ;;
     esac
 
-    # Copy report to Reports and push to GitHub
     if [[ -f "$report_path" ]]; then
-        cp "$report_path" ./Reports/
-        cd ./Reports
-        git add "$(basename "$report_path")"
-        git commit -m "Add compliance report for Tomcat $major on $(date)"
-        git push
-        cd ..
+        push_report_to_github "$report_path" "$dir"
     else
         echo "❌ No report found at $report_path"
     fi
