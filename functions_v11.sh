@@ -9,7 +9,6 @@
 check_controls_v11() {
   local dir="$1"
   local hostname=$(hostname)
-  local timestamp=$(date '+%Y-%m-%d_%H-%M-%S')
   
   local output_dir="/opt/tomcat_hardening"
   mkdir -p "$output_dir"
