@@ -19,17 +19,17 @@ check_controls_v11() {
 
   # Clear or create report file
   : > "$report_path" || { echo "❌ Failed to create $report_path" >&2; return 1; }
-
+  
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "Apache Tomcat 11 Hardening Assessment"
   echo "Host: $hostname"
-  echo "Version: $($dir/bin/version.sh 2>/dev/null | grep 'Server number' | cut -d':' -f2 | xargs)"
+  echo "Version: $("$dir/bin/version.sh" 2>/dev/null | grep 'Server number' | cut -d':' -f2 | xargs)"
   echo "Date: $(date)"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
   echo "Apache Tomcat 11 Compliance Report - $(date)" > "$report_path"
   echo "Host: $hostname" >> "$report_path"
-  echo "Tomcat Version: $($dir/bin/version.sh 2>/dev/null | grep 'Server number' | cut -d':' -f2 | xargs)" >> "$report_path"
+  echo "Tomcat Version: $("$dir/bin/version.sh" 2>/dev/null | grep 'Server number' | cut -d':' -f2 | xargs)" >> "$report_path"
 
   # =============================
   # [CIS 1.1] Disable Auto-Deployment
@@ -1053,9 +1053,11 @@ check_controls_v11() {
 
   # === Exit with result summary ===
   if grep -q "❌" "$report_path"; then
-    echo "\nTomcat hardening check: FAILED" | tee -a "$report_path"
+    echo "" | tee -a "$report_path"
+    echo "Tomcat hardening check: FAILED" | tee -a "$report_path"
   else
-    echo "\nTomcat hardening check: PASSED" | tee -a "$report_path"
+    echo "" | tee -a "$report_path"
+    echo "Tomcat hardening check: PASSED" | tee -a "$report_path"
   fi
 
   # ✅ Echo the report path for parent script to capture
