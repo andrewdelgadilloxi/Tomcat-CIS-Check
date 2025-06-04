@@ -42,9 +42,9 @@ TOMCAT_DIRS=(
 get_tomcat_version() {
     local dir="$1"
     local jar
-    jar=$(find "$dir" -name catalina.jar 2>/dev/null | head -n1)
+    jar=$(timeout 5s find "$dir" -name catalina.jar 2>/dev/null | head -n1)
     if [[ -f "$jar" ]]; then
-        unzip -p "$jar" META-INF/MANIFEST.MF 2>/dev/null | grep "Implementation-Version" | awk '{print $2}' | cut -d'-' -f1
+        timeout 5s unzip -p "$jar" META-INF/MANIFEST.MF 2>/dev/null | grep "Implementation-Version" | awk '{print $2}' | cut -d'-' -f1
     else
         echo ""
     fi
