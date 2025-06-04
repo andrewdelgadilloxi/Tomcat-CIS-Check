@@ -19,7 +19,7 @@ check_controls_v9() {
 
   # Clear or create report file
   : > "$report_path" || { echo "❌ Failed to create $report_path" >&2; return 1; }
-
+  
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "Apache Tomcat 9 Hardening Assessment"
   echo "Host: $hostname"
@@ -520,13 +520,15 @@ check_controls_v9() {
 
   # === Exit with result summary ===
   if grep -q "❌" "$report_path"; then
-    echo "\nTomcat hardening check: FAILED" | tee -a "$report_path"
+    echo "" | tee -a "$report_path"
+    echo "Tomcat hardening check: FAILED" | tee -a "$report_path"
   else
-    echo "\nTomcat hardening check: PASSED" | tee -a "$report_path"
+    echo "" | tee -a "$report_path"
+    echo "Tomcat hardening check: PASSED" | tee -a "$report_path"
   fi
 
   # ✅ Echo the report path for parent script to capture
   echo "$report_path"
-
+}
 # Entry point example
 # check_controls_v9 "/opt/tomcat9"
