@@ -31,7 +31,7 @@ check_controls_v10() {
   echo "Tomcat Version: $("$dir/bin/version.sh" 2>/dev/null | grep 'Server number' | cut -d':' -f2 | xargs)" >> "$report_path"
 
 # [CIS 1.1] Remove sample applications and documentation
-echo -e "starting CIS 1.1 TEST"
+printf "STARTING CIS 1.1 TEST"
 echo -e "\n[CIS 1.1] Remove sample applications and documentation" | tee -a "$report_path"
 samples=(examples docs ROOT host-manager manager)
 found=0
@@ -49,7 +49,7 @@ done
 [[ $found -eq 0 ]] || echo "Remediation: Remove unused sample applications from $dir/webapps/" | tee -a "$report_path"
 
 # [CIS 1.2] Remove or secure the shutdown port
-echo -e "starting CIS 1.2 TEST"
+printf "STARTING CIS 1.2 TEST"
 echo -e "\n[CIS 1.2] Remove or secure the shutdown port" | tee -a "$report_path"
 shutdown_port=$(grep -oP '<Server port="\K[^"]+' "$dir/conf/server.xml")
 echo "Evidence: Shutdown port is configured as '$shutdown_port'" | tee -a "$report_path"
@@ -62,7 +62,7 @@ else
 fi
 
 # [CIS 1.3] Disable or secure unused connectors
-echo -e "starting CIS 1.3 TEST"
+printf "STARTING CIS 1.3 TEST"
 echo -e "\n[CIS 1.3] Disable or secure unused connectors" | tee -a "$report_path"
 connector_count=$(grep -c '<Connector ' "$dir/conf/server.xml")
 echo "Evidence: Found $connector_count <Connector> entries in server.xml" | tee -a "$report_path"
@@ -76,7 +76,7 @@ else
 fi
 
 # [CIS 1.4] Change the shutdown command to a non-default value
-echo -e "starting CIS 1.4 TEST"
+printf "STARTING CIS 1.4 TEST"
 echo -e "\n[CIS 1.4] Change the shutdown command" | tee -a "$report_path"
 shutdown_cmd=$(grep -oP 'shutdown="\K[^"]+' "$dir/conf/server.xml")
 echo "Evidence: Shutdown command is '$shutdown_cmd'" | tee -a "$report_path"
@@ -89,7 +89,7 @@ else
 fi
 
 # [CIS 1.5] Remove or obfuscate the server header
-echo -e "starting CIS 1.5 TEST"
+printf "STARTING CIS 1.5 TEST"
 echo -e "\n[CIS 1.5] Remove or obfuscate the server header" | tee -a "$report_path"
 server_header=$(grep -oP 'server="\K[^"]+' "$dir/conf/server.xml")
 echo "Evidence: server header is set to '$server_header'" | tee -a "$report_path"
@@ -102,7 +102,7 @@ else
 fi
 
 # [CIS 1.6] Disable TRACE method
-echo -e "starting CIS 1.6 TEST"
+printf "STARTING CIS 1.6 TEST"
 echo -e "\n[CIS 1.6] Disable TRACE method" | tee -a "$report_path"
 trace_check=$(grep -o 'allowTrace="true"' "$dir/conf/server.xml")
 echo "Evidence: $(if [[ -n "$trace_check" ]]; then echo "allowTrace=\"true\" found"; else echo "allowTrace not set or set to false"; fi)" | tee -a "$report_path"
@@ -115,7 +115,7 @@ else
 fi
 
 # [CIS 1.7] Disable auto deployment of applications
-echo -e "starting CIS 1.7 TEST"
+printf "STARTING CIS 1.7 TEST"
 echo -e "\n[CIS 1.7] Disable auto deployment of applications" | tee -a "$report_path"
 auto_deploy=$(grep -oP 'autoDeploy="\K[^"]+' "$dir/conf/server.xml" | head -n1)
 deploy_on_startup=$(grep -oP 'deployOnStartup="\K[^"]+' "$dir/conf/server.xml" | head -n1)
@@ -129,7 +129,7 @@ else
 fi
 
 # [CIS 1.8] Restrict access to the manager application
-echo -e "starting CIS 1.8 TEST"
+printf "STARTING CIS 1.8 TEST"
 echo -e "\n[CIS 1.8] Restrict access to the manager application" | tee -a "$report_path"
 if [[ -e "$dir/webapps/manager" ]]; then
   manager_realm=$(grep -A5 '<Context' "$dir/webapps/manager/META-INF/context.xml" 2>/dev/null | grep -i 'Valve\|RemoteAddr')
@@ -146,7 +146,7 @@ else
 fi
 
 # [CIS 1.9] Restrict access to the host-manager application
-echo -e "starting CIS 1.9 TEST"
+printf "STARTING CIS 1.9 TEST"
 echo -e "\n[CIS 1.9] Restrict access to the host-manager application" | tee -a "$report_path"
 if [[ -e "$dir/webapps/host-manager" ]]; then
   host_mgr_realm=$(grep -A5 '<Context' "$dir/webapps/host-manager/META-INF/context.xml" 2>/dev/null | grep -i 'Valve\|RemoteAddr')
@@ -163,7 +163,7 @@ else
 fi
 
 # [CIS 1.10] Remove the default ROOT application
-echo -e "starting CIS 1.10 TEST"
+printf "STARTING CIS 1.10 TEST"
 echo -e "\n[CIS 1.10] Remove the default ROOT application" | tee -a "$report_path"
 if [[ -d "$dir/webapps/ROOT" ]]; then
   echo "❌ Default ROOT application is installed" | tee -a "$report_path"
@@ -175,7 +175,7 @@ else
 fi
 
 # [CIS 2.1] Hide server version information
-echo -e "starting CIS 2.1 TEST"
+printf "STARTING CIS 2.1 TEST"
 echo -e "\n[CIS 2.1] Hide server version information" | tee -a "$report_path"
 server_info=$(unzip -p "$dir/lib/catalina.jar" org/apache/catalina/util/ServerInfo.properties 2>/dev/null | grep server.info)
 echo "Evidence: $server_info" | tee -a "$report_path"
@@ -189,7 +189,7 @@ else
 fi
 
 # [CIS 2.2] Hide server build number
-echo -e "starting CIS 2.2 TEST"
+printf "STARTING CIS 2.2 TEST"
 echo -e "\n[CIS 2.2] Hide server build number" | tee -a "$report_path"
 server_built=$(unzip -p "$dir/lib/catalina.jar" org/apache/catalina/util/ServerInfo.properties 2>/dev/null | grep server.built)
 echo "Evidence: $server_built" | tee -a "$report_path"
@@ -203,7 +203,7 @@ else
 fi
 
 # [CIS 2.3] Hide server version number
-echo -e "starting CIS 2.3 TEST"
+printf "STARTING CIS 2.3 TEST"
 echo -e "\n[CIS 2.3] Hide server version number" | tee -a "$report_path"
 server_number=$(unzip -p "$dir/lib/catalina.jar" org/apache/catalina/util/ServerInfo.properties 2>/dev/null | grep server.number)
 echo "Evidence: $server_number" | tee -a "$report_path"
@@ -217,7 +217,7 @@ else
 fi
 
 # [CIS 2.4] Disable X-Powered-By header
-echo -e "starting CIS 2.4 TEST"
+printf "STARTING CIS 2.4 TEST"
 echo -e "\n[CIS 2.4] Disable X-Powered-By header" | tee -a "$report_path"
 xpb_status=$(grep -oP 'xpoweredBy="\K[^"]+' "$dir/conf/server.xml")
 echo "Evidence: xpoweredBy=\"$xpb_status\"" | tee -a "$report_path"
@@ -231,7 +231,7 @@ else
 fi
 
 # [CIS 3.1] Restrict access to conf directory
-echo -e "starting CIS 3.1 TEST"
+printf "STARTING CIS 3.1 TEST"
 echo -e "\n[CIS 3.1] Restrict access to conf directory" | tee -a "$report_path"
 conf_perms=$(stat -c "%a" "$dir/conf")
 conf_owner=$(stat -c "%U:%G" "$dir/conf")
@@ -246,7 +246,7 @@ else
 fi
 
 # [CIS 3.2] Restrict access to bin directory
-echo -e "starting CIS 3.2 TEST"
+printf "STARTING CIS 3.2 TEST"
 echo -e "\n[CIS 3.2] Restrict access to bin directory" | tee -a "$report_path"
 bin_perms=$(stat -c "%a" "$dir/bin")
 bin_owner=$(stat -c "%U:%G" "$dir/bin")
@@ -261,7 +261,7 @@ else
 fi
 
 # [CIS 3.3] Restrict access to logs directory
-echo -e "starting CIS 3.3 TEST"
+printf "STARTING CIS 3.3 TEST"
 echo -e "\n[CIS 3.3] Restrict access to logs directory" | tee -a "$report_path"
 logs_perms=$(stat -c "%a" "$dir/logs")
 logs_owner=$(stat -c "%U:%G" "$dir/logs")
@@ -276,7 +276,7 @@ else
 fi
 
 # [CIS 3.4] Restrict access to webapps directory
-echo -e "starting CIS 3.4 TEST"
+printf "STARTING CIS 3.4 TEST"
 echo -e "\n[CIS 3.4] Restrict access to webapps directory" | tee -a "$report_path"
 webapps_perms=$(stat -c "%a" "$dir/webapps")
 webapps_owner=$(stat -c "%U:%G" "$dir/webapps")
@@ -291,7 +291,7 @@ else
 fi
 
 # [CIS 4.1] Configure centralized logging
-echo -e "starting CIS 4.1 TEST"
+printf "STARTING CIS 4.1 TEST"
 echo -e "\n[CIS 4.1] Configure centralized logging" | tee -a "$report_path"
 if [[ -f "$dir/conf/logging.properties" ]]; then
   log_dir=$(grep 'org.apache.juli.FileHandler.directory' "$dir/conf/logging.properties" | cut -d'=' -f2 | xargs)
@@ -311,7 +311,7 @@ else
 fi
 
 # [CIS 4.2] Secure access to log files
-echo -e "starting CIS 4.2 TEST"
+printf "STARTING CIS 4.2 TEST"
 echo -e "\n[CIS 4.2] Secure access to log files" | tee -a "$report_path"
 if [[ -d "$dir/logs" ]]; then
   perms=$(stat -c "%a" "$dir/logs")
@@ -332,7 +332,7 @@ else
 fi
 
 # [CIS 4.3] Ensure log rotation is configured
-echo -e "starting CIS 4.3 TEST"
+printf "STARTING CIS 4.3 TEST"
 echo -e "\n[CIS 4.3] Ensure log rotation is configured" | tee -a "$report_path"
 rotation_check=$(grep -i 'rotatable=' "$dir/conf/logging.properties" | grep -i 'false')
 echo "Evidence: $(if [[ -z "$rotation_check" ]]; then echo "rotation enabled (default or explicit)"; else echo "$rotation_check"; fi)" | tee -a "$report_path"
@@ -346,7 +346,7 @@ else
 fi
 
 # [CIS 4.4] Enable access log valve for web access logging
-echo -e "starting CIS 4.4 TEST"
+printf "STARTING CIS 4.4 TEST"
 echo -e "\n[CIS 4.4] Enable access log valve" | tee -a "$report_path"
 access_log_check=$(grep -i '<Valve className="org.apache.catalina.valves.AccessLogValve"' "$dir/conf/server.xml")
 echo "Evidence: $(if [[ -n "$access_log_check" ]]; then echo "AccessLogValve present"; else echo "No AccessLogValve found"; fi)" | tee -a "$report_path"
@@ -360,7 +360,7 @@ else
 fi
 
 # [CIS 5.1] Use LockOutRealm for brute-force protection
-echo -e "starting CIS 5.1 TEST"
+printf "STARTING CIS 5.1 TEST"
 echo -e "\n[CIS 5.1] Use LockOutRealm for brute-force protection" | tee -a "$report_path"
 lockout_realm=$(grep -i 'LockOutRealm' "$dir/conf/server.xml")
 echo "Evidence: $(if [[ -n "$lockout_realm" ]]; then echo "$lockout_realm"; else echo "No LockOutRealm found"; fi)" | tee -a "$report_path"
@@ -374,7 +374,7 @@ else
 fi
 
 # [CIS 5.2] Restrict access to tomcat-users.xml
-echo -e "starting CIS 5.2 TEST"
+printf "STARTING CIS 5.2 TEST"
 echo -e "\n[CIS 5.2] Restrict access to tomcat-users.xml" | tee -a "$report_path"
 if [[ -f "$dir/conf/tomcat-users.xml" ]]; then
   perms=$(stat -c "%a" "$dir/conf/tomcat-users.xml")
@@ -395,7 +395,7 @@ else
 fi
 
 # [CIS 5.3] Avoid use of clear-text passwords
-echo -e "starting CIS 5.3 TEST"
+printf "STARTING CIS 5.3 TEST"
 echo -e "\n[CIS 5.3] Avoid use of clear-text passwords" | tee -a "$report_path"
 if grep -q 'password="[^"]\+"' "$dir/conf/tomcat-users.xml"; then
   echo "❌ Passwords appear to be stored in clear text in tomcat-users.xml" | tee -a "$report_path"
@@ -408,7 +408,7 @@ else
 fi
 
 # [CIS 6.1] Ensure HTTPS is used for all connections
-echo -e "starting CIS 6.1 TEST"
+printf "STARTING CIS 6.1 TEST"
 echo -e "\n[CIS 6.1] Ensure HTTPS is used for all connections" | tee -a "$report_path"
 https_connectors=$(grep '<Connector' "$dir/conf/server.xml" | grep -i 'sslProtocol\|SSLEnabled')
 echo "Evidence: $(if [[ -n \"$https_connectors\" ]]; then echo \"$https_connectors\"; else echo \"No SSL-enabled connectors found\"; fi)" | tee -a "$report_path"
@@ -422,7 +422,7 @@ else
 fi
 
 # [CIS 6.2] Use strong SSL/TLS protocols
-echo -e "starting CIS 6.2 TEST"
+printf "STARTING CIS 6.2 TEST"
 echo -e "\n[CIS 6.2] Use strong SSL/TLS protocols" | tee -a "$report_path"
 tls_protocols=$(grep -i 'sslProtocol\|protocol' "$dir/conf/server.xml" | grep -i 'TLS')
 echo "Evidence: $(if [[ -n \"$tls_protocols\" ]]; then echo \"$tls_protocols\"; else echo \"No TLS protocol explicitly defined\"; fi)" | tee -a "$report_path"
@@ -436,7 +436,7 @@ else
 fi
 
 # [CIS 6.3] Configure secure ciphers
-echo -e "starting CIS 6.3 TEST"
+printf "STARTING CIS 6.3 TEST"
 echo -e "\n[CIS 6.3] Configure secure ciphers" | tee -a "$report_path"
 ciphers=$(grep -i 'ciphers' "$dir/conf/server.xml")
 echo "Evidence: $(if [[ -n \"$ciphers\" ]]; then echo \"$ciphers\"; else echo \"No cipher suite configuration found\"; fi)" | tee -a "$report_path"
@@ -450,7 +450,7 @@ else
 fi
 
 # [CIS 6.4] Disable insecure SSL/TLS protocols
-echo -e "starting CIS 6.4 TEST"
+printf "STARTING CIS 6.4 TEST"
 echo -e "\n[CIS 6.4] Disable insecure SSL/TLS protocols" | tee -a "$report_path"
 disabled_protocols=$(grep -i 'sslEnabledProtocols' "$dir/conf/server.xml")
 echo "Evidence: $(if [[ -n \"$disabled_protocols\" ]]; then echo \"$disabled_protocols\"; else echo \"sslEnabledProtocols not configured\"; fi)" | tee -a "$report_path"
@@ -464,7 +464,7 @@ else
 fi
 
 # [CIS 7.1] Ensure Tomcat is up to date
-echo -e "starting CIS 7.1 TEST"
+printf "STARTING CIS 7.1 TEST"
 echo -e "\n[CIS 7.1] Ensure Tomcat is up to date" | tee -a "$report_path"
 installed_version=$("$dir/bin/version.sh" 2>/dev/null | grep 'Server number' | cut -d':' -f2 | xargs)
 echo "Evidence: Installed Tomcat version = $installed_version" | tee -a "$report_path"
@@ -481,7 +481,7 @@ else
 fi
 
 # [CIS 8.1] Restrict access to sensitive Tomcat files
-echo -e "starting CIS 8.1 TEST"
+printf "STARTING CIS 8.1 TEST"
 echo -e "\n[CIS 8.1] Restrict access to sensitive Tomcat files" | tee -a "$report_path"
 sensitive_files=("$dir/conf/server.xml" "$dir/conf/web.xml" "$dir/bin/catalina.sh")
 for file in "${sensitive_files[@]}"; do
@@ -501,7 +501,7 @@ for file in "${sensitive_files[@]}"; do
 done
 
 # [CIS 8.2] Ensure setuid and setgid bits are not set on Tomcat scripts
-echo -e "starting CIS 8.2 TEST"
+printf "STARTING CIS 8.2 TEST"
 echo -e "\n[CIS 8.2] Ensure setuid/setgid bits are not set on Tomcat scripts" | tee -a "$report_path"
 setuid_files=$(find "$dir/bin" -type f \( -perm -4000 -o -perm -2000 \) 2>/dev/null)
 if [[ -z "$setuid_files" ]]; then
@@ -515,7 +515,7 @@ else
 fi
 
 # [CIS 8.3] Ensure symbolic links do not bypass restrictions
-echo -e "starting CIS 8.3 TEST"
+printf "STARTING CIS 8.3 TEST"
 echo -e "\n[CIS 8.3] Ensure symbolic links do not bypass restrictions" | tee -a "$report_path"
 symlinks=$(find "$dir" -type l)
 if [[ -z "$symlinks" ]]; then
@@ -529,7 +529,7 @@ else
 fi
 
 # [CIS 9.1] Restrict access to the Tomcat administrative interfaces
-echo -e "starting CIS 9.1 TEST"
+printf "STARTING CIS 9.1 TEST"
 echo -e "\n[CIS 9.1] Restrict access to administrative interfaces" | tee -a "$report_path"
 admin_apps=("manager" "host-manager")
 restricted=0
@@ -568,7 +568,7 @@ done
 [[ $apps_disabled -eq 2 ]] && echo "Exploitability: Low" | tee -a "$report_path" || echo "Exploitability: Medium" | tee -a "$report_path"
 
 # [CIS 10.1] Deploy applications as unprivileged user
-echo -e "starting CIS 10.1 TEST"
+printf "STARTING CIS 10.1 TEST"
 echo -e "\n[CIS 10.1] Deploy applications as unprivileged user" | tee -a "$report_path"
 tomcat_user=$(ps -eo user,comm | grep -E "catalina|tomcat" | awk '{print $1}' | sort -u)
 echo "Evidence: Tomcat is running as user: $tomcat_user" | tee -a "$report_path"
@@ -582,7 +582,7 @@ else
 fi
 
 # [CIS 10.2] Use secure session cookies
-echo -e "starting CIS 10.2 TEST"
+printf "STARTING CIS 10.2 TEST"
 echo -e "\n[CIS 10.2] Use secure session cookies" | tee -a "$report_path"
 context_secure_cookie=$(grep -i 'useHttpOnly' "$dir/conf/context.xml")
 echo "Evidence: $context_secure_cookie" | tee -a "$report_path"
@@ -596,7 +596,7 @@ else
 fi
 
 # [CIS 10.3] Ensure web application directory is not browsable
-echo -e "starting CIS 10.3 TEST"
+printf "STARTING CIS 10.3 TEST"
 echo -e "\n[CIS 10.3] Ensure web application directory is not browsable" | tee -a "$report_path"
 if grep -q 'listings="false"' "$dir/conf/web.xml"; then
   echo "✅ Directory listings disabled in web.xml" | tee -a "$report_path"
@@ -608,7 +608,7 @@ else
 fi
 
 # [CIS 10.4] Remove default web.xml
-echo -e "starting CIS 10.4 TEST"
+printf "STARTING CIS 10.4 TEST"
 echo -e "\n[CIS 10.4] Remove default web.xml" | tee -a "$report_path"
 if [[ -f "$dir/conf/web.xml" ]]; then
   echo "❌ web.xml exists at $dir/conf/web.xml" | tee -a "$report_path"
@@ -620,7 +620,7 @@ else
 fi
 
 # [CIS 10.5 – 10.19] Review application-specific configurations
-echo -e "starting CIS 10.19 TEST"
+printf "STARTING CIS 10.19 TEST"
 for control in {5..19}; do
   echo -e "\n[CIS 10.$control] Review application-specific configuration (manual)" | tee -a "$report_path"
   echo "Evidence: Application behavior and deployment configuration must be manually reviewed." | tee -a "$report_path"
