@@ -14,7 +14,7 @@ check_controls_v11() {
   local output_dir="/opt/tomcat_hardening"
   mkdir -p "$output_dir"
 
-  local report_name="${hostname}_tomcat11_cis_compliance_${timestamp}.txt"
+  local report_name="${hostname}_tomcat11_cis_compliance.txt"
   local report_path="$output_dir/$report_name"
 
   # Clear or create report file
