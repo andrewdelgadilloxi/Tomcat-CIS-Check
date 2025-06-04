@@ -390,11 +390,13 @@ else
   echo "Remediation: chmod -R 750 $bin_dir and chown -R tomcat:tomcat $bin_dir" | tee -a "$report_path"
 fi
 
-   # === Exit with result summary ===
+  # === Exit with result summary ===
   if grep -q "❌" "$report_path"; then
-    echo "\nTomcat hardening check: FAILED" | tee -a "$report_path"
+    echo "" | tee -a "$report_path"
+    echo "Tomcat hardening check: FAILED" | tee -a "$report_path"
   else
-    echo "\nTomcat hardening check: PASSED" | tee -a "$report_path"
+    echo "" | tee -a "$report_path"
+    echo "Tomcat hardening check: PASSED" | tee -a "$report_path"
   fi
 
   # ✅ Echo the report path for parent script to capture
