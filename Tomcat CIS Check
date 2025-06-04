@@ -42,9 +42,9 @@ TOMCAT_DIRS=(
 get_tomcat_version() {
     local dir="$1"
     local jar
-    jar=$(timeout 5s find "$dir" -name catalina.jar 2>/dev/null | head -n1)
+    jar=$(find "$dir" -name catalina.jar 2>/dev/null | head -n1)
     if [[ -f "$jar" ]]; then
-        timeout 5s unzip -p "$jar" META-INF/MANIFEST.MF 2>/dev/null | grep "Implementation-Version" | awk '{print $2}' | cut -d'-' -f1
+        unzip -p "$jar" META-INF/MANIFEST.MF 2>/dev/null | grep "Implementation-Version" | awk '{print $2}' | cut -d'-' -f1
     else
         echo ""
     fi
@@ -101,23 +101,23 @@ launch_cis_check() {
     case "$major" in
       7)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v7.sh)
-        report_path=$(timeout 5s check_controls_v7 "$dir" | tr -d '\r' | tail -n1)
+        report_path=$(check_controls_v7 "$dir" | tr -d '\r' | tail -n1)
         ;;
       8)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v8.sh)
-        report_path=$(timeout 5s check_controls_v8 "$dir" | tr -d '\r' | tail -n1)
+        report_path=$(check_controls_v8 "$dir" | tr -d '\r' | tail -n1)
         ;;
       9)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v9.sh)
-        report_path=$(timeout 5s check_controls_v9 "$dir" | tr -d '\r' | tail -n1)
+        report_path=$(check_controls_v9 "$dir" | tr -d '\r' | tail -n1)
         ;;
       10)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v10.sh)
-        report_path=$(timeout 5s check_controls_v10 "$dir" | tr -d '\r' | tail -n1)
+        report_path=$(check_controls_v10 "$dir" | tr -d '\r' | tail -n1)
         ;;
       11)
         source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v11.sh)
-        report_path=$(timeout 5s check_controls_v11 "$dir" | tr -d '\r' | tail -n1)
+        report_path=$(check_controls_v11 "$dir" | tr -d '\r' | tail -n1)
         ;;
       *)
         echo "⚠️ Unsupported Tomcat version: $major"
