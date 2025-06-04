@@ -60,7 +60,7 @@ push_report_to_github() {
     local base_name
     base_name=$(basename "$report_file")
     local timestamp
-    timestamp=$(date +%Y%m%d-%H%M%S)
+    timestamp=$(date '+%Y-%m-%d_%H-%M-%S')
     local new_report_name="${base_name%.txt}_$(basename "$tomcat_dir")_$timestamp.txt"
 
     local api_url="https://api.github.com/repos/$repo/contents/$new_report_name"
