@@ -54,7 +54,7 @@ push_report_to_github() {
     local report_file="$1"
     local tomcat_dir="$2"
     local github_token="${GITHUB_TOKEN:?Error: GITHUB_TOKEN not set}"
-    local repo="USERNAME/Reports"
+    local repo="USERNAME/REPORT_REPO"
     local branch="main"
 
     local base_name=$(basename "$report_file")
