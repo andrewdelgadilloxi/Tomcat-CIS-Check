@@ -54,7 +54,7 @@ push_report_to_github() {
     local report_file="$1"
     local tomcat_dir="$2"
     local github_token="${GITHUB_TOKEN:?Error: GITHUB_TOKEN not set}"
-    local repo="andrewdelgadilloxi/Reports"
+    local repo="USERNAME/Reports"
     local branch="main"
 
     local base_name=$(basename "$report_file")
@@ -100,7 +100,7 @@ launch_cis_check() {
 
     case "$major" in
       7)
-        source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v7.sh)
+        source <(curl -sSL https://raw.githubusercontent.com/USERNAME/Tomcat-CIS-Check/main/functions_v7.sh)
         # After sourcing the functions file:
 		export -f check_controls_v7
         
@@ -111,7 +111,7 @@ launch_cis_check() {
 		report_path=$(echo "$output" | tr -d '\r' | tail -n1)
         ;;
       8)
-      	source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v8.sh)
+      	source <(curl -sSL https://raw.githubusercontent.com/USERNAME/Tomcat-CIS-Check/main/functions_v8.sh)
       	# After sourcing the functions file:
 		export -f check_controls_v8
         
@@ -122,7 +122,7 @@ launch_cis_check() {
 		report_path=$(echo "$output" | tr -d '\r' | tail -n1)
         ;;
       9)
-      	source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v9.sh)
+      	source <(curl -sSL https://raw.githubusercontent.com/USERNAME/Tomcat-CIS-Check/main/functions_v9.sh)
       	# After sourcing the functions file:
 		export -f check_controls_v9
         
@@ -133,7 +133,7 @@ launch_cis_check() {
 		report_path=$(echo "$output" | tr -d '\r' | tail -n1)
         ;;
       10)
-        source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v10.sh)
+        source <(curl -sSL https://raw.githubusercontent.com/USERNAME/Tomcat-CIS-Check/main/functions_v10.sh)
     	export -f check_controls_v10
 
     	# Run with timeout, capture output AND print live to terminal
@@ -142,7 +142,7 @@ launch_cis_check() {
     	report_path=$(echo "$output" | tr -d '\r' | tail -n1)
         ;;
       11)
-        source <(curl -sSL https://raw.githubusercontent.com/andrewdelgadilloxi/Tomcat-CIS-Check/main/functions_v11.sh)
+        source <(curl -sSL https://raw.githubusercontent.com/USERNAME/Tomcat-CIS-Check/main/functions_v11.sh)
         # After sourcing the functions file:
 		export -f check_controls_v11
         
